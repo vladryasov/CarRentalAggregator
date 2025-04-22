@@ -1,0 +1,111 @@
+@startuml Class
+
+' ======= MODEL =======
+package "Model" {
+  class User {
+    +Id: int
+    +Name: string
+    +Email: string
+    +Role: string
+  }
+
+  class Company {
+    +Id: int
+    +Name: string
+    +Description: string
+  }
+
+  class Car {
+    +Id: int
+    +Brand: string
+    +Model: string
+    +PricePerHour: decimal
+    +CompanyId: int
+  }
+
+  class Rental {
+    +Id: int
+    +UserId: int
+    +CarId: int
+    +StartTime: DateTime
+    +EndTime: DateTime
+  }
+
+  class UserDto
+  class CarDto
+  class CompanyDto
+  class RentalDto
+
+  User --> Rental
+  Car --> Rental
+  Company --> Car
+}
+
+' ======= SERVICE =======
+package "Service" {
+  interface IUserService
+  class UserService
+  UserService ..|> IUserService
+
+  interface ICarService
+  class CarService
+  CarService ..|> ICarService
+
+  interface ICompanyService
+  class CompanyService
+  CompanyService ..|> ICompanyService
+}
+
+' ======= CONTROLLER =======
+package "Controller" {
+  class UsersController
+  class CarsController
+  class CompaniesController
+
+  UsersController --> IUserService
+  CarsController --> ICarService
+  CompaniesController --> ICompanyService
+}
+
+' ======= PERSISTENCE =======
+package "Persistence" {
+  ' Базовый интерфейс без generic
+  interface IRepository
+
+  interface ICarRepository
+  interface IUserRepository
+  interface ICompanyRepository
+
+  class CarRepository
+  class UserRepository
+  class CompanyRepository
+
+  class AppDbContext
+  class CarConfiguration
+  class UserConfiguration
+  class CompanyConfiguration
+
+  ' Связи без <T>
+  ICarRepository --|> IRepository
+  IUserRepository --|> IRepository
+  ICompanyRepository --|> IRepository
+
+  CarRepository ..|> ICarRepository
+  UserRepository ..|> IUserRepository
+  CompanyRepository ..|> ICompanyRepository
+
+  CarRepository --> AppDbContext
+  UserRepository --> AppDbContext
+  CompanyRepository --> AppDbContext
+
+  AppDbContext --> CarConfiguration
+  AppDbContext --> UserConfiguration
+  AppDbContext --> CompanyConfiguration
+}
+
+' ======= СВЯЗИ между слоями =======
+UserService --> IUserRepository
+CarService --> ICarRepository
+CompanyService --> ICompanyRepository
+
+@enduml

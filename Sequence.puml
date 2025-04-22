@@ -1,0 +1,24 @@
+@startuml Sequence
+actor User
+participant "React Frontend" as Frontend
+participant "ASP.NET Web API" as API
+participant "BookingService" as Service
+database "Database" as DB
+
+User -> Frontend : Открывает страницу авто
+Frontend -> API : GET /cars
+API -> DB : Получение списка авто
+DB --> API : Список авто
+API --> Frontend : Список авто
+Frontend --> User : Отображение авто
+
+User -> Frontend : Нажимает 'Забронировать'
+Frontend -> API : POST /bookings
+API -> Service : Validate and создать бронь
+Service -> DB : Сохранение брони
+DB --> Service : OK
+Service --> API : OK
+API --> Frontend : Успешно
+Frontend --> User : Подтверждение брони
+
+@enduml

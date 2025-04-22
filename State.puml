@@ -1,0 +1,11 @@
+@startuml State
+
+[*] --> Available
+
+Available --> Reserved : Забронирована пользователем
+Reserved --> Rented : Оформление аренды
+Rented --> Returned : Завершение аренды
+Reserved --> Available : Отмена бронирования
+Returned --> Available : Авто готово снова
+
+@enduml

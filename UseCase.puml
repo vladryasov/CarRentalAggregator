@@ -1,0 +1,28 @@
+@startuml UseCase
+left to right direction
+
+actor User
+actor CompanyRep as "Company Representative"
+
+rectangle "Car Rental Aggregator" {
+    
+    (Просмотр списка доступных авто) as viewCars
+    (Поиск автомобиля) as searchCar
+    (Фильтрация по критериям) as filterCars
+    (Бронирование автомобиля) as bookCar
+    (Отмена бронирования) as cancelBooking
+
+    (Регистрация компании) as registerCompany
+    (Добавление автомобилей компании) as addCompanyCars
+
+    User --> viewCars
+    User --> searchCar
+    User --> filterCars
+    User --> bookCar
+    User --> cancelBooking
+
+    CompanyRep --> registerCompany
+    CompanyRep --> addCompanyCars
+}
+
+@enduml
