@@ -2,45 +2,63 @@
 
 ' ======= MODEL =======
 package "Model" {
-  class User {
-    +Id: int
-    +Name: string
-    +Email: string
-    +Role: string
+  class Car {
+    +Id: Guid
+    +Brand: string
+    +Model: string
+    +Description: string
+    +EngineCapacity: float
+    +EnginePower: int
+    +EngineType: EngineTypes
+    +PriceForOneDay: decimal
+    +CompanyId: Guid
   }
 
   class Company {
-    +Id: int
+    +Id: Guid
     +Name: string
-    +Description: string
+    +PhoneNumber: string
+    +Email: string
+    +CarIds: List<Guid>
   }
 
-  class Car {
-    +Id: int
-    +Brand: string
-    +Model: string
-    +PricePerHour: decimal
-    +CompanyId: int
+  class Rent {
+    +Id: Guid
+    +UserId: Guid
+    +CarId: Guid
+    +CompanyId: Guid
+    +StartRent: DateTime
+    +EndRent: DateTime
   }
 
-  class Rental {
-    +Id: int
-    +UserId: int
-    +CarId: int
-    +StartTime: DateTime
-    +EndTime: DateTime
+  class User {
+    +Id: Guid
+    +Name: string
+    +Email: string
+    +Password: string
+    +Role: string
   }
 
+  Car --> EngineTypes
+  Car --> Company : CompanyId
+  Company --> Car : CarIds
+  Rent --> Car
+  Rent --> Company
+  Rent --> User
+}
+
+package "DTOs"{
   class UserDto
   class CarDto
   class CompanyDto
-  class RentalDto
+  class RentDto
 
-  User --> Rental
-  Car --> Rental
-  Company --> Car
+  UserDto --> User
+  CarDto --> Car
+  CompanyDto --> Company
+  RentDto --> Rent
+
 }
-
 ' ======= SERVICE =======
 package "Service" {
   interface IUserService
