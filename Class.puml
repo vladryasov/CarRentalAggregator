@@ -47,7 +47,7 @@ package "Model" {
   Rent --> User
 }
 
-package "DTOs"{
+package "DTO"{
   class UserDto
   class CarDto
   class CompanyDto
@@ -72,6 +72,18 @@ package "Service" {
   interface ICompanyService
   class CompanyService
   CompanyService ..|> ICompanyService
+
+  interface IAuthService
+  class AuthService
+  AuthService ..|> IAuthService
+
+  interface IJWTService
+  class JWTService
+  JWTService ..|> IJWTService
+
+  interface IRentService
+  class RentService
+  RentService ..|> IRentService
 }
 
 ' ======= CONTROLLER =======
@@ -79,10 +91,15 @@ package "Controller" {
   class UsersController
   class CarsController
   class CompaniesController
+  class RentsController
+  class AuthController
+  class AdminsController
 
   UsersController --> IUserService
   CarsController --> ICarService
   CompaniesController --> ICompanyService
+  RentsController --> IRentService
+  AuthController --> IAuthService
 }
 
 ' ======= PERSISTENCE =======
@@ -93,37 +110,45 @@ package "Persistence" {
   interface ICarRepository
   interface IUserRepository
   interface ICompanyRepository
+  interface IRentRepository
 
   class CarRepository
   class UserRepository
   class CompanyRepository
+  class RentRepository
 
   class AppDbContext
   class CarConfiguration
   class UserConfiguration
   class CompanyConfiguration
+  class RentConfiguration
 
   ' Связи без <T>
   ICarRepository --|> IRepository
   IUserRepository --|> IRepository
   ICompanyRepository --|> IRepository
+  IRentRepository --|> IRepository
 
   CarRepository ..|> ICarRepository
   UserRepository ..|> IUserRepository
   CompanyRepository ..|> ICompanyRepository
+  RentRepository ..|> IRentRepository
 
   CarRepository --> AppDbContext
   UserRepository --> AppDbContext
   CompanyRepository --> AppDbContext
+  RentRepository --> AppDbContext
 
   AppDbContext --> CarConfiguration
   AppDbContext --> UserConfiguration
   AppDbContext --> CompanyConfiguration
+  AppDbContext --> RentConfiguration
 }
 
 ' ======= СВЯЗИ между слоями =======
 UserService --> IUserRepository
 CarService --> ICarRepository
 CompanyService --> ICompanyRepository
+RentService --> IRentRepository
 
 @enduml
