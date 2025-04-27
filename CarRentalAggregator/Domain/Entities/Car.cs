@@ -13,12 +13,14 @@ namespace CarRentalAggregator.Domain.Entities
         public EngineTypes EngineType { get; set; }
 
         public decimal PriceForOneDay { get; set; }
+
         public Guid CompanyId { get; set; }
+        public Company? Company { get; set; } = null;
 
         public Car(string brand, string model, string description,
                    float engineCapacity, int enginePower,
                    EngineTypes engineType, decimal priceForOneDay,
-                   Guid companyId)
+                   Company company)
         {
             Brand = brand;
             Model = model;
@@ -27,7 +29,9 @@ namespace CarRentalAggregator.Domain.Entities
             EnginePower = enginePower;
             EngineType = engineType;
             PriceForOneDay = priceForOneDay;
-            CompanyId = companyId;
+            Company = company;
         }
+
+        public Car() { }
     }
 }

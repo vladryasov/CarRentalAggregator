@@ -8,7 +8,7 @@ namespace CarRentalAggregator.Persistance.Configurations
     {
         public void Configure(EntityTypeBuilder<Company> builder)
         {
-
+            builder.HasKey(c => c.Id);
         }
     }
 }

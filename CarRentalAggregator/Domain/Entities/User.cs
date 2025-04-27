@@ -15,5 +15,7 @@ namespace CarRentalAggregator.Domain.Entities
             Password = password;
             Role = role;
         }
+
+        public User() { }
     }
 }

@@ -17,5 +17,7 @@
             StartRent = startRent;
             EndRent = endRent;
         }
+
+        public Rent() { }
     }
 }

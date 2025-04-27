@@ -6,14 +6,15 @@
         public string Name { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public List<Guid>? CarIds { get; set; }
+        public List<Car>? Cars { get; set; }
 
-        public Company(string name, string phoneNumber, string email, List<Guid>? carIds)
+        public Company(string name, string phoneNumber, string email, List<Car>? cars)
         {
             Name = name;
             PhoneNumber = phoneNumber;
             Email = email;
-            CarIds = carIds;
+            Cars = cars;
         }
+        public Company() { }
     }
 }

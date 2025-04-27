@@ -1,6 +1,9 @@
-﻿namespace CarRentalAggregator.Domain.Interfaces
+﻿using CarRentalAggregator.Domain.Entities;
+
+namespace CarRentalAggregator.Domain.Interfaces
 {
-    public interface ICompanyRepository : IRepository
+    public interface ICompanyRepository : IRepository<Company>
     {
+
     }
 }
