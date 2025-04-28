@@ -31,6 +31,12 @@ namespace CarRentalAggregator.Application.Services
             return car == null ? null : _mapper.Map<CarDto>(car);
         }
 
+        public async Task<IEnumerable<CarDto?>> GetCarsByCompanyIdAsync(Guid companyId, CancellationToken cancellationToken)
+        {
+            var cars = await _unitOfWork.Cars.GetByCompanyIdAsync(companyId, cancellationToken);
+            return _mapper.Map<IEnumerable<CarDto>>(cars);
+        }
+
         public async Task<IEnumerable<CarDto?>> GetCarByBrandAsync(string brand, CancellationToken cancellationToken)
         {
             var cars = await _unitOfWork.Cars.GetByBrandAsync(brand, cancellationToken);
@@ -55,15 +61,15 @@ namespace CarRentalAggregator.Application.Services
             return (cars == null ? null : _mapper.Map<IEnumerable<CarDto>>(cars))!;
         }
 
-        public async Task<IEnumerable<CarDto?>> GetByEngineTypeAsync(EngineTypes engineType, CancellationToken cancellationToken)
+        public async Task<IEnumerable<CarDto?>> GetCarByEngineTypeAsync(EngineTypes engineType, CancellationToken cancellationToken)
         {
             var cars = await _unitOfWork.Cars.GetByEngineTypeAsync(engineType, cancellationToken);
             return (cars == null ? null : _mapper.Map<IEnumerable<CarDto>>(cars))!;
         }
 
-        public async Task<IEnumerable<CarDto?>> GetByPriceAsync(EngineTypes engineType, CancellationToken cancellationToken)
+        public async Task<IEnumerable<CarDto?>> GetCarByPriceAsync(decimal price, CancellationToken cancellationToken)
         {
-            var cars = await _unitOfWork.Cars.GetByEngineTypeAsync(engineType, cancellationToken);
+            var cars = await _unitOfWork.Cars.GetByPriceAsync(price, cancellationToken);
             return (cars == null ? null : _mapper.Map<IEnumerable<CarDto>>(cars))!;
         }
 
@@ -71,15 +77,21 @@ namespace CarRentalAggregator.Application.Services
         {
             var car = _mapper.Map<Car>(carDto);
 
+            var company = await _unitOfWork.Companies.GetByIdAsync(car.CompanyId, cancellationToken);
+            if(company == null)
+            {
+                throw new Exception("Компания с таким Id не найдена");
+            }
+
             await _unitOfWork.Cars.AddAsync(car, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return _mapper.Map<CarDto>(car);
         }
 
-        public async Task<bool> UpdateCarAsync(Guid id, CarDto carDto, CancellationToken cancellationToken)
+        public async Task<bool> UpdateCarAsync(Guid userId, CarDto carDto, CancellationToken cancellationToken)
         {
-            var car = await _unitOfWork.Cars.GetByIdAsync(id, cancellationToken);
+            var car = await _unitOfWork.Cars.GetByIdAsync(userId, cancellationToken);
             if (car == null)
                 return false;
 
@@ -91,9 +103,9 @@ namespace CarRentalAggregator.Application.Services
             return true;
         }
 
-        public async Task<bool> DeleteCarAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<bool> DeleteCarAsync(Guid userId, CancellationToken cancellationToken)
         {
-            var car = await _unitOfWork.Cars.GetByIdAsync(id, cancellationToken);
+            var car = await _unitOfWork.Cars.GetByIdAsync(userId, cancellationToken);
             if (car == null)
                 return false;
 

@@ -49,6 +49,11 @@ namespace CarRentalAggregator.Persistance.Repositories
             => (await _dbContext.Cars
                 .FirstOrDefaultAsync(c => c.Id == id, cancellationToken))!;
 
+        public async Task<List<Car>> GetByCompanyIdAsync(Guid companyId, CancellationToken cancellationToken = default)
+            => await _dbContext.Cars
+                .Where(c => c.CompanyId == companyId)
+                .ToListAsync(cancellationToken);
+
         public async Task<List<Car>> GetByModelAsync(string model, CancellationToken cancellationToken = default)
             => await _dbContext.Cars
                 .Where(c => c.Model == model)

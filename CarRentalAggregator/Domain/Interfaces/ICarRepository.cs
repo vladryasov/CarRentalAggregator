@@ -5,6 +5,7 @@ namespace CarRentalAggregator.Domain.Interfaces
 {
     public interface ICarRepository : IRepository<Car>
     {
+        Task<List<Car>> GetByCompanyIdAsync(Guid companyId, CancellationToken cancellationToken = default);
         Task<List<Car>> GetByBrandAsync(string brand, CancellationToken cancellationToken = default);
         Task<List<Car>> GetByEngineCapacityAsync(float engineCapacity, CancellationToken cancellationToken = default);
         Task<List<Car>> GetByEnginePowerAsync(int enginePower, CancellationToken cancellationToken = default);

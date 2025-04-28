@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CarRentalAggregator.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250427163008_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250428115635_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

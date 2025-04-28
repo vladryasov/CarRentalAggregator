@@ -20,6 +20,9 @@ namespace CarRentalAggregator.Persistance.Configurations
 
             builder.Property(c => c.PriceForOneDay)
                 .HasColumnType("numeric(18,2)");
+
+            builder.HasOne(c => c.Company)
+                .WithMany(c => c.Cars);
         }
     }
 }

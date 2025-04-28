@@ -33,12 +33,36 @@ namespace CarRentalAggregator.Application.Services
         {
             var user = _mapper.Map<User>(userDto);
 
-            //user.Id = Guid.NewGuid();
-
             await _unitOfWork.Users.AddAsync(user, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return _mapper.Map<UserDto>(user);
+        }
+
+        public async Task<bool> DeleteUserAsync(Guid userId, CancellationToken cancellationToken)
+        {
+            var user = await _unitOfWork.Users.GetByIdAsync(userId, cancellationToken);
+            if (user == null)
+                return false;
+
+            _unitOfWork.Users.Delete(user);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return true;
+        }
+
+        public async Task<bool> UpdateUserAsync(Guid userId, UserDto userDto, CancellationToken cancellationToken)
+        {
+            var user = await _unitOfWork.Users.GetByIdAsync(userId, cancellationToken);
+            if (user == null)
+                return false;
+
+            _mapper.Map(userDto, user);
+
+            _unitOfWork.Users.Update(user);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return true;
         }
     }
 }

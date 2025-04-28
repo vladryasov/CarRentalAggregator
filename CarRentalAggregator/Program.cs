@@ -20,6 +20,8 @@ namespace CarRentalAggregator
             builder.Services.AddAutoMapper(typeof(Program));
             builder.Services.AddScoped<ICarService, CarService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IRentService, RentService>();
+            builder.Services.AddScoped<ICompanyService, CompanyService>();
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<ICarRepository, CarRepository>();
