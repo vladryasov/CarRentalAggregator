@@ -14,6 +14,5 @@ namespace CarRentalAggregator.DTO
         public decimal PriceForOneDay { get; set; }
 
         public Guid CompanyId { get; set; }
-        public CompanyDto? CompanyDto { get; set; }
     }
 }
