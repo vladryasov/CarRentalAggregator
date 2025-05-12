@@ -1,6 +1,6 @@
 @CarRentalAggregator_HostAddress = http://localhost:5216
 
-GET {{CarRentalAggregator_HostAddress}}/api/Car/
+POST {{CarRentalAggregator_HostAddress}}/api/Admin/set-admin/5d742fce-5271-428b-81c3-ed32f536951b/
 Accept: application/json
 
 ###

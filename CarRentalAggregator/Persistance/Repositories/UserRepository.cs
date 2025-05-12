@@ -28,6 +28,9 @@ namespace CarRentalAggregator.Persistance.Repositories
             => (await _dbContext.Users
                 .FirstOrDefaultAsync(u => u.Id == id, cancellationToken))!;
 
+        public async Task<User> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
+            =>(await _dbContext.Users
+                .FirstOrDefaultAsync(u => u.Email == email, cancellationToken))!;
         public void Update(User entity)
         {
             _dbContext.Update(entity);
