@@ -6,6 +6,7 @@ using CarRentalAggregator.Domain.Interfaces;
 using CarRentalAggregator.DTO;
 using CarRentalAggregator.DTOs;
 using System.Text.RegularExpressions;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 public class AuthService : IAuthService
@@ -52,7 +53,7 @@ public class AuthService : IAuthService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         // Генерация токена
-        var token = _jwtService.GenerateToken(user);
+        var token = _jwtService.GenerateToken(user, request.RememberMe);
 
         return new AuthResponse
         {
@@ -77,7 +78,7 @@ public class AuthService : IAuthService
             throw new Exception("Invalid email or password");
 
         // Генерация токена
-        var token = _jwtService.GenerateToken(user);
+        var token = _jwtService.GenerateToken(user, request.RememberMe);
 
         return new AuthResponse
         {
@@ -87,6 +88,30 @@ public class AuthService : IAuthService
                 Id = user.Id,
                 Role = user.Role
             }
+        };
+    }
+
+    public async Task<UserDto> AutoLoginAsync(string? jwtToken, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(jwtToken))
+            throw new Exception("No token provided");
+
+        var principal = _jwtService.ValidateToken(jwtToken);
+        if (principal == null)
+            throw new Exception("Invalid token");
+
+        var userIdstr = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userIdstr == null || !Guid.TryParse(userIdstr, out var userId))
+            throw new Exception("Invalid token payload");
+
+        var user = await _unitOfWork.Users.GetByIdAsync(userId);
+        if (user == null)
+            throw new Exception("User not found");
+
+        return new UserDto
+        {
+            Id = userId,
+            Role = user.Role
         };
     }
 }

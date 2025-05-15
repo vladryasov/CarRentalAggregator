@@ -21,16 +21,21 @@ public class AuthController : ControllerBase
         {
             var response = await _authService.LoginAsync(request, cancellationToken);
 
+            var expires = request.RememberMe
+                ? DateTime.UtcNow.AddDays(30)
+                : DateTime.UtcNow.AddHours(1);
+
             // Установка cookie (HTTP-only для безопасности)
             Response.Cookies.Append("JwtToken", response.Token, new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddHours(1)
+                Expires = expires
             });
 
-            return Ok(new { message = "Login successful", userId = response.UserDto.Id, token = response.Token });
+            return Ok(new { message = "Login successful", userId = response.UserDto.Id, 
+                role = response.UserDto.Role, token = response.Token });
         }
         catch (Exception ex)
         {
@@ -47,22 +52,43 @@ public class AuthController : ControllerBase
         {
             var response = await _authService.RegisterAsync(request, cancellationToken);
 
+            var expires = request.RememberMe
+                ? DateTime.UtcNow.AddDays(30)
+                : DateTime.UtcNow.AddHours(1);
+
             // Установка cookie (как при логине)
             Response.Cookies.Append("JwtToken", response.Token, new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddHours(1)
+                Expires = expires
             });
 
-            return Ok(new { message = "Registration successful", userId = response.UserDto.Id });
+            return Ok(new { message = "Registration successful", userId = response.UserDto.Id, 
+                role = response.UserDto.Role, token = response.Token });
         }
         catch (Exception ex)
         {
             return BadRequest(new { message = ex.Message });
         }
     }
+
+    [HttpGet("auto-login")]
+    public async Task<IActionResult> AutoLogin(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var jwt = Request.Cookies["JwtToken"];
+            var userDto = await _authService.AutoLoginAsync(jwt, cancellationToken);
+            return Ok(userDto);
+        }
+        catch (Exception ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+    }
+
 
     [HttpPost("logout")]
     public IActionResult Logout()

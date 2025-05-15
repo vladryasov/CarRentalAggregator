@@ -17,6 +17,17 @@ namespace CarRentalAggregator
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowLocalhost3000", builder =>
+                {
+                    builder.WithOrigins("https://localhost:3000") // Разрешаем запросы с фронтенда
+                           .AllowAnyMethod() // Разрешаем любые методы (GET, POST и т.д.)
+                           .AllowAnyHeader() // Разрешаем любые заголовки
+                           .AllowCredentials(); // Разрешаем отправку куки (нужно для withCredentials)
+                });
+            });
+
             // Add services to the container.
 
             builder.Services.AddDbContext<AppDbContext>(options =>
@@ -119,6 +130,7 @@ namespace CarRentalAggregator
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseCors("AllowLocalhost3000");
 
             app.UseHttpsRedirection();
 
