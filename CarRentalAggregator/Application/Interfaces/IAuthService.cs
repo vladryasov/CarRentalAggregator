@@ -10,5 +10,7 @@ namespace CarRentalAggregator.Application.Interfaces
         Task<AuthResponse> RegisterAsync(LoginDto request, CancellationToken cancellationToken);
         Task<AuthResponse> LoginAsync(LoginDto request, CancellationToken cancellationToken);
         Task<UserDto> AutoLoginAsync(string? jwtToken,  CancellationToken cancellationToken);
+
+        Task<UserDto> LogoutAsync(string? jwtToken, CancellationToken cancellationToken);
     }
 }

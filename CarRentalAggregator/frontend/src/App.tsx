@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
+import MainPage from './pages/MainPage';
 import { autoLogin } from './services/api';
+import AccountIcon from './components/AccountIcon';
 
 const App: React.FC = () => {
   const [isAuthChecked, setIsAuthChecked] = useState(false);
@@ -9,14 +11,18 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      try {
-        await autoLogin();
-        navigate('/dashboard');
-      } catch {
-        // not logged in, stay on login page
-      } finally {
-        setIsAuthChecked(true);
+      const remembered = localStorage.getItem('rememberedUser');
+
+      if (!remembered) {
+        try {
+          await autoLogin(); // только если не помечен как remembered
+          navigate('/main');
+        } catch {
+          // не авторизован
+        }
       }
+
+      setIsAuthChecked(true);
     };
 
     checkAuth();
@@ -25,11 +31,14 @@ const App: React.FC = () => {
   if (!isAuthChecked) return <div>Loading...</div>;
 
   return (
-    <Routes>
-      <Route path="/" element={<LoginPage />} />
-      <Route path="/dashboard" element={<div>Dashboard (to be implemented)</div>} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/main" element={<MainPage setIsAuthChecked={setIsAuthChecked} />} />
+      </Routes>
+    </>
   );
 };
 
 export default App;
+

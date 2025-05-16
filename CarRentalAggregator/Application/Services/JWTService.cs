@@ -20,7 +20,7 @@ public class JWTService : IJWTService
     {
         var expires = rememberMe
                 ? DateTime.UtcNow.AddDays(30)
-                : DateTime.UtcNow.AddHours(1);
+                : (DateTime?)null;
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),

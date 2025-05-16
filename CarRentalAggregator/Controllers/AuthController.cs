@@ -23,7 +23,7 @@ public class AuthController : ControllerBase
 
             var expires = request.RememberMe
                 ? DateTime.UtcNow.AddDays(30)
-                : DateTime.UtcNow.AddHours(1);
+                : (DateTime?)null;
 
             // Установка cookie (HTTP-only для безопасности)
             Response.Cookies.Append("JwtToken", response.Token, new CookieOptions
@@ -54,7 +54,7 @@ public class AuthController : ControllerBase
 
             var expires = request.RememberMe
                 ? DateTime.UtcNow.AddDays(30)
-                : DateTime.UtcNow.AddHours(1);
+                : (DateTime?)null;
 
             // Установка cookie (как при логине)
             Response.Cookies.Append("JwtToken", response.Token, new CookieOptions
@@ -93,6 +93,15 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     public IActionResult Logout()
     {
+        // Удаляем куку с токеном
+        Response.Cookies.Delete("JwtToken", new CookieOptions
+        {
+            HttpOnly = true,
+            SameSite = SameSiteMode.None,
+            Secure = true
+        });
+
         return Ok(new { message = "Logout successful" });
     }
+
 }

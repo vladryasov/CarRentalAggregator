@@ -25,7 +25,7 @@ const LoginForm: React.FC = () => {
     console.log(`${isLoginMode ? 'Login' : 'Registration'} successful:`, response);
 
     if (isLoginMode || request.rememberMe) {
-      navigate('/dashboard');
+      navigate('/main');
     } else {
       // после регистрации перекидываем на форму логина
       setIsLoginMode(true);

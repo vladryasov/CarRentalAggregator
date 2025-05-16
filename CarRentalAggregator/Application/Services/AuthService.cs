@@ -8,6 +8,7 @@ using CarRentalAggregator.DTOs;
 using System.Text.RegularExpressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Data;
 
 public class AuthService : IAuthService
 {
@@ -113,5 +114,10 @@ public class AuthService : IAuthService
             Id = userId,
             Role = user.Role
         };
+    }
+
+    public async Task<UserDto> LogoutAsync(string? jwtToken, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }
