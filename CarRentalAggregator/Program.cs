@@ -1,5 +1,6 @@
 using CarRentalAggregator.Application.Interfaces;
 using CarRentalAggregator.Application.Services;
+using CarRentalAggregator.Application.Serialization;
 using CarRentalAggregator.Domain.Interfaces;
 using CarRentalAggregator.Persistance;
 using CarRentalAggregator.Persistance.Repositories;
@@ -87,7 +88,11 @@ namespace CarRentalAggregator
                 options.AddPolicy("ClientOnly", policy => policy.RequireRole("1"));
             });
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new EngineTypeSerializer());
+                });
+
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 

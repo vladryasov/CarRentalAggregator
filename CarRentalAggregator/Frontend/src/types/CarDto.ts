@@ -1,7 +1,9 @@
 export interface CarDto {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  image: string;
+  id: string;
+  brand: string;
+  model: string;
+  engineCapacity: number;
+  enginePower: number;
+  engineType: string; 
+  priceForOneDay: number;
 }

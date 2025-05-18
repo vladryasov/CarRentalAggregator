@@ -1,7 +1,6 @@
 ﻿using CarRentalAggregator.Application.Interfaces;
 using CarRentalAggregator.Domain.Enums;
 using CarRentalAggregator.DTO;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarRentalAggregator.Controllers
@@ -40,50 +39,74 @@ namespace CarRentalAggregator.Controllers
         }
 
         [HttpGet("brand/{brand}")]
-        public async Task<ActionResult<CarDto>> GetByCarBrandAsync(string brand, CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<CarDto>>> GetByCarBrandAsync(string brand, CancellationToken cancellationToken)
         {
-            var car = await _carService.GetCarByBrandAsync(brand, cancellationToken);
-            return Ok(car);
+            var cars = await _carService.GetCarByBrandAsync(brand, cancellationToken);
+            return Ok(cars);
         }
 
         [HttpGet("model/{model}")]
-        public async Task<ActionResult<CarDto>> GetByCarModelAsync(string model, CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<CarDto>>> GetByCarModelAsync(string model, CancellationToken cancellationToken)
         {
-            var car = await _carService.GetCarByModelAsync(model, cancellationToken);
-            return Ok(car);
+            var cars = await _carService.GetCarByModelAsync(model, cancellationToken);
+            return Ok(cars);
         }
 
-        [HttpGet("engineCapacity/{engineCapacity}")]
-        public async Task<ActionResult<CarDto>> GetByCarEngineCapacityAsync(float engineCapacity, CancellationToken cancellationToken)
+        [HttpGet("engine-capacity-range")]
+        public async Task<ActionResult<IEnumerable<CarDto>>> GetByCarEngineCapacityAsync(
+            [FromQuery] float minEngineCapacity,
+            [FromQuery] float maxEngineCapacity,
+            CancellationToken cancellationToken)
         {
-            var car = await _carService.GetCarByEngineCapacityAsync(engineCapacity, cancellationToken);
-            return Ok(car);
+            if (minEngineCapacity > maxEngineCapacity)
+            {
+                return BadRequest("minEngineCapacity must be less than or equal to maxEngineCapacity");
+            }
+
+            var cars = await _carService.GetCarByEngineCapacityAsync(minEngineCapacity, maxEngineCapacity, cancellationToken);
+            return Ok(cars);
         }
 
-        [HttpGet("engineType/{engineType}")]
-        public async Task<ActionResult<CarDto>> GetByCarEngineTypeAsync(EngineTypes engineType, CancellationToken cancellationToken)
+        [HttpGet("engine-type/{engineType}")]
+        public async Task<ActionResult<IEnumerable<CarDto>>> GetByCarEngineTypeAsync(EngineTypes engineType, CancellationToken cancellationToken)
         {
-            var car = await _carService.GetCarByEngineTypeAsync(engineType, cancellationToken);
-            return Ok(car);
+            var cars = await _carService.GetCarByEngineTypeAsync(engineType, cancellationToken);
+            return Ok(cars);
         }
 
-        [HttpGet("enginePower/{enginePower}")]
-        public async Task<ActionResult<CarDto>> GetByCarEnginePowerAsync(int enginePower, CancellationToken cancellationToken)
+        [HttpGet("engine-power-range")]
+        public async Task<ActionResult<IEnumerable<CarDto>>> GetByCarEnginePowerAsync(
+            [FromQuery] int minEnginePower,
+            [FromQuery] int maxEnginePower,
+            CancellationToken cancellationToken)
         {
-            var car = await _carService.GetCarByEnginePowerAsync(enginePower, cancellationToken);
-            return Ok(car);
+            if (minEnginePower > maxEnginePower)
+            {
+                return BadRequest("minEnginePower must be less than or equal to maxEnginePower");
+            }
+
+            var cars = await _carService.GetCarByEnginePowerAsync(minEnginePower, maxEnginePower, cancellationToken);
+            return Ok(cars);
         }
 
-        [HttpGet("price/{price}")]
-        public async Task<ActionResult<CarDto>> GetByCarPriceAsync(decimal price, CancellationToken cancellationToken)
+        [HttpGet("price-range")]
+        public async Task<ActionResult<IEnumerable<CarDto>>> GetByCarPriceAsync(
+            [FromQuery] decimal minPrice,
+            [FromQuery] decimal maxPrice,
+            CancellationToken cancellationToken)
         {
-            var car = await _carService.GetCarByPriceAsync(price, cancellationToken);
-            return Ok(car);
+            if (minPrice > maxPrice)
+            {
+                return BadRequest("minPrice must be less than or equal to maxPrice");
+            }
+
+            var cars = await _carService.GetCarByPriceAsync(minPrice, maxPrice, cancellationToken);
+            return Ok(cars);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateCar([FromBody] CarDto carDto, CancellationToken cancellationToken)
-        { 
+        {
             var createdCar = await _carService.CreateCarAsync(carDto, cancellationToken);
             return CreatedAtAction(nameof(GetByCarIdAsync), new { carId = createdCar.Id }, createdCar);
         }

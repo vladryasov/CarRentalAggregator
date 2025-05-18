@@ -49,15 +49,15 @@ namespace CarRentalAggregator.Application.Services
             return (cars == null ? null : _mapper.Map<IEnumerable<CarDto>>(cars))!;
         }
 
-        public async Task<IEnumerable<CarDto?>> GetCarByEngineCapacityAsync(float engineCapacity, CancellationToken cancellationToken)
+        public async Task<IEnumerable<CarDto?>> GetCarByEngineCapacityAsync(float minEngineCapacity, float maxEngineCapacity, CancellationToken cancellationToken)
         {
-            var cars = await _unitOfWork.Cars.GetByEngineCapacityAsync(engineCapacity, cancellationToken);
+            var cars = await _unitOfWork.Cars.GetByEngineCapacityAsync(minEngineCapacity, maxEngineCapacity, cancellationToken);
             return (cars == null ? null : _mapper.Map<IEnumerable<CarDto>>(cars))!;
         }
 
-        public async Task<IEnumerable<CarDto?>> GetCarByEnginePowerAsync(int enginePower, CancellationToken cancellationToken)
+        public async Task<IEnumerable<CarDto?>> GetCarByEnginePowerAsync(int minEnginePower, int maxEnginePower, CancellationToken cancellationToken)
         {
-            var cars = await _unitOfWork.Cars.GetByEnginePowerAsync(enginePower, cancellationToken);
+            var cars = await _unitOfWork.Cars.GetByEnginePowerAsync(minEnginePower, maxEnginePower, cancellationToken);
             return (cars == null ? null : _mapper.Map<IEnumerable<CarDto>>(cars))!;
         }
 
@@ -67,9 +67,9 @@ namespace CarRentalAggregator.Application.Services
             return (cars == null ? null : _mapper.Map<IEnumerable<CarDto>>(cars))!;
         }
 
-        public async Task<IEnumerable<CarDto?>> GetCarByPriceAsync(decimal price, CancellationToken cancellationToken)
+        public async Task<IEnumerable<CarDto?>> GetCarByPriceAsync(decimal minPrice, decimal maxPrice, CancellationToken cancellationToken)
         {
-            var cars = await _unitOfWork.Cars.GetByPriceAsync(price, cancellationToken);
+            var cars = await _unitOfWork.Cars.GetByPriceAsync(minPrice, maxPrice, cancellationToken);
             return (cars == null ? null : _mapper.Map<IEnumerable<CarDto>>(cars))!;
         }
 

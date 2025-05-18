@@ -7,16 +7,18 @@ export const api = axios.create({
   withCredentials: true,
 });
 
-// Удалить interceptor или изменить:
+// ⛔ Placeholder interceptor (можно расширить в будущем)
 api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('rememberedUser') ? JSON.parse(localStorage.getItem('rememberedUser')!).token : null;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });
 
-
+// 🔐 Auth
 export const login = async (data: LoginRequest): Promise<LoginResponse> => {
-  const response = await api.post<LoginResponse>('/api/Auth/login', data, {
-    withCredentials: true, // важно для отправки/получения куки
-  });
+  const response = await api.post<LoginResponse>('/api/Auth/login', data);
   return response.data;
 };
 
@@ -26,9 +28,7 @@ export const register = async (data: LoginRequest): Promise<LoginResponse> => {
 };
 
 export const autoLogin = async (): Promise<UserDto> => {
-  const response = await api.get<UserDto>('/api/Auth/auto-login', {
-    withCredentials: true
-  });
+  const response = await api.get<UserDto>('/api/Auth/auto-login');
   return response.data;
 };
 
@@ -37,11 +37,36 @@ export const logout = async (): Promise<{ message: string }> => {
   return response.data;
 };
 
+// 🚗 Cars
 export const fetchCars = async (): Promise<CarDto[]> => {
   const response = await api.get<CarDto[]>('/api/Car');
   return response.data;
 };
 
+export const searchCarsByBrand = async (brand: string): Promise<CarDto[]> => {
+  const response = await api.get<CarDto[]>(`/api/Car/brand/${brand}`);
+  return response.data;
+};
 
+export const searchCarsByModel = async (model: string): Promise<CarDto[]> => {
+  const response = await api.get<CarDto[]>(`/api/Car/model/${model}`);
+  return response.data;
+};
 
-export {};
+// Новые методы для диапазонной фильтрации
+export const fetchCarsByEngineCapacityRange = async (min: number, max: number): Promise<CarDto[]> => {
+  const response = await api.get<CarDto[]>(`/api/Car/engine-capacity-range?min=${min}&max=${max}`);
+  return response.data;
+};
+
+export const fetchCarsByEnginePowerRange = async (min: number, max: number): Promise<CarDto[]> => {
+  const response = await api.get<CarDto[]>(`/api/Car/engine-power-range?min=${min}&max=${max}`);
+  return response.data;
+};
+
+export const fetchCarsByPriceRange = async (min: number, max: number): Promise<CarDto[]> => {
+  const response = await api.get<CarDto[]>(`/api/Car/price-range?min=${min}&max=${max}`);
+  return response.data;
+};
+
+export default api;

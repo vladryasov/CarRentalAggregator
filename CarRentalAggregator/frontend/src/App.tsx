@@ -3,7 +3,6 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import MainPage from './pages/MainPage';
 import { autoLogin } from './services/api';
-import AccountIcon from './components/AccountIcon';
 
 const App: React.FC = () => {
   const [isAuthChecked, setIsAuthChecked] = useState(false);

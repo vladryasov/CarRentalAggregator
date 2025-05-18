@@ -30,14 +30,14 @@ namespace CarRentalAggregator.Persistance.Repositories
                 .Where(c => c.Brand == brand)
                 .ToListAsync(cancellationToken);
 
-        public async Task<List<Car>> GetByEngineCapacityAsync(float engineCapacity, CancellationToken cancellationToken = default)
+        public async Task<List<Car>> GetByEngineCapacityAsync(float minEngineCapacity, float maxEngineCapacity, CancellationToken cancellationToken = default)
             => await _dbContext.Cars
-                .Where(c => c.EngineCapacity >= engineCapacity)
+                .Where(c => c.EngineCapacity >= minEngineCapacity && c.EngineCapacity <= maxEngineCapacity)
                 .ToListAsync(cancellationToken);
 
-        public async Task<List<Car>> GetByEnginePowerAsync(int enginePower, CancellationToken cancellationToken = default)
+        public async Task<List<Car>> GetByEnginePowerAsync(int minEnginePower, int maxEnginePower, CancellationToken cancellationToken = default)
             => await _dbContext.Cars
-                .Where(c => c.EnginePower >= enginePower)
+                .Where(c => c.EnginePower >= minEnginePower && c.EnginePower <= maxEnginePower)
                 .ToListAsync(cancellationToken);
 
         public async Task<List<Car>> GetByEngineTypeAsync(EngineTypes engineType, CancellationToken cancellationToken = default)
@@ -59,9 +59,9 @@ namespace CarRentalAggregator.Persistance.Repositories
                 .Where(c => c.Model == model)
                 .ToListAsync(cancellationToken);
 
-        public async Task<List<Car>> GetByPriceAsync(decimal price, CancellationToken cancellationToken = default)
+        public async Task<List<Car>> GetByPriceAsync(decimal minPrice, decimal maxPrice, CancellationToken cancellationToken = default)
             => await _dbContext.Cars
-                .Where(c => c.PriceForOneDay <= price)
+                .Where(c => c.PriceForOneDay >= minPrice && c.PriceForOneDay <= maxPrice)
                 .ToListAsync(cancellationToken);
 
         public void Update(Car entity)
