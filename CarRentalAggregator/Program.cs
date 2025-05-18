@@ -65,6 +65,20 @@ namespace CarRentalAggregator
                             context.Token = token;
                         }
 
+                        // Логируем заголовки
+                        Console.WriteLine("Request Headers:");
+                        foreach (var header in context.Request.Headers)
+                        {
+                            Console.WriteLine($"{header.Key}: {header.Value}");
+                        }
+
+                        // Логируем query string
+                        Console.WriteLine("Query String:");
+                        foreach (var query in context.Request.Query)
+                        {
+                            Console.WriteLine($"{query.Key}: {query.Value}");
+                        }
+
                         return Task.CompletedTask;
                     }
                 };

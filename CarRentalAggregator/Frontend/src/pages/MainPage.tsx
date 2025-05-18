@@ -1,18 +1,15 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import CarCard from '../components/CarCard';
 import FilterPanel from '../components/FilterPanel';
 import AccountIcon from '../components/AccountIcon';
 import { CarDto } from '../types/CarDto';
-import { fetchCars } from '../services/api';
-import api from '../services/api';
-import debounce from 'lodash/debounce';
+import { fetchCars, fetchCarsByFilter } from '../services/api';
 
 interface Props {
   setIsAuthChecked: (value: boolean) => void;
 }
 
 const MainPage: React.FC<Props> = ({ setIsAuthChecked }) => {
-  const [initialCars, setInitialCars] = useState<CarDto[]>([]); // Исходный список машин
   const [cars, setCars] = useState<CarDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -21,14 +18,22 @@ const MainPage: React.FC<Props> = ({ setIsAuthChecked }) => {
   const [engineCapacityRange, setEngineCapacityRange] = useState<{ min: number; max: number }>({ min: 1.0, max: 10.0 });
   const [enginePowerRange, setEnginePowerRange] = useState<{ min: number; max: number }>({ min: 50, max: 1500 });
   const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 10, max: 2000 });
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+
+  const isMounted = useRef(false);
 
   useEffect(() => {
+    if (isMounted.current) return;
+    isMounted.current = true;
+
     const loadCars = async () => {
+      console.log('Loading initial cars...');
       try {
         const data = await fetchCars();
-        setInitialCars(data); // Сохраняем исходный список
-        filterCars(data);
-        setNotFound(false);
+        console.log('Fetched cars:', data);
+        setCars(data);
+        setNotFound(data.length === 0);
       } catch (err) {
         console.error('Failed to fetch cars:', err);
         setNotFound(true);
@@ -40,90 +45,65 @@ const MainPage: React.FC<Props> = ({ setIsAuthChecked }) => {
     loadCars();
   }, []);
 
-  const filterCars = (data: CarDto[]) => {
-    setLoading(true);
-    try {
-      let filteredCars = [...data];
-
-      // Фильтрация по диапазонам
-      filteredCars = filteredCars.filter(
-        (car) =>
-          car.engineCapacity >= engineCapacityRange.min &&
-          car.engineCapacity <= engineCapacityRange.max &&
-          car.enginePower >= enginePowerRange.min &&
-          car.enginePower <= enginePowerRange.max &&
-          car.priceForOneDay >= priceRange.min &&
-          car.priceForOneDay <= priceRange.max
-      );
-
-      // Сортировка
-      if (priceOrder === 'asc') {
-        filteredCars.sort((a, b) => a.priceForOneDay - b.priceForOneDay);
-      } else if (priceOrder === 'desc') {
-        filteredCars.sort((a, b) => b.priceForOneDay - a.priceForOneDay);
-      }
-
-      setCars(filteredCars);
-      setNotFound(filteredCars.length === 0);
-    } catch (err) {
-      console.error('Filter failed:', err);
-      setCars([]);
-      setNotFound(true);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Debounce для фильтрации
-  const debouncedFilterCars = useCallback(
-    debounce((data: CarDto[]) => {
-      filterCars(data);
-    }, 300),
-    [engineCapacityRange, enginePowerRange, priceRange, priceOrder]
-  );
+  const applyFilters = async () => {
+  console.log('Applying filters with current query:', searchQuery);
+  setLoading(true);
+  try {
+    const filteredCars = await fetchCarsByFilter(
+      engineCapacityRange.min,
+      engineCapacityRange.max,
+      enginePowerRange.min,
+      enginePowerRange.max,
+      priceRange.min,
+      priceRange.max,
+      priceOrder,
+      searchQuery // теперь всегда учитываем поиск
+    );
+    setCars(filteredCars);
+    setNotFound(filteredCars.length === 0);
+  } catch (err) {
+    console.error('Filter failed:', err);
+    setCars([]);
+    setNotFound(true);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleSearchChange = async (query: string) => {
-    setLoading(true);
-    try {
-      if (!query) {
-        const allCars = await fetchCars();
-        setInitialCars(allCars); // Обновляем исходный список
-        filterCars(allCars);
-        return;
-      }
+  console.log('Searching for:', query);
+  setSearchQuery(query); // сохраняем
 
-      const byBrand = await api.get<CarDto[]>(`/api/Car/brand/${query}`);
-      if (byBrand.data.length > 0) {
-        setInitialCars(byBrand.data); // Обновляем исходный список
-        filterCars(byBrand.data);
-      } else {
-        const byModel = await api.get<CarDto[]>(`/api/Car/model/${query}`);
-        if (byModel.data.length > 0) {
-          setInitialCars(byModel.data); // Обновляем исходный список
-          filterCars(byModel.data);
-        } else {
-          setCars([]);
-          setNotFound(true);
-        }
-      }
-    } catch (err) {
-      console.error('Search failed:', err);
-      setCars([]);
-      setNotFound(true);
-    } finally {
-      setLoading(false);
+  setLoading(true);
+  try {
+    if (!query.trim()) {
+      // Пустой запрос → загружаем все машины
+      const allCars = await fetchCars();
+      setCars(allCars);
+      setNotFound(allCars.length === 0);
+    } else {
+      const filtered = await fetchCarsByFilter(
+        engineCapacityRange.min,
+        engineCapacityRange.max,
+        enginePowerRange.min,
+        enginePowerRange.max,
+        priceRange.min,
+        priceRange.max,
+        priceOrder,
+        query // передаем строку поиска!
+      );
+      setCars(filtered);
+      setNotFound(filtered.length === 0);
     }
-  };
+  } catch (err) {
+    console.error('Search failed:', err);
+    setCars([]);
+    setNotFound(true);
+  } finally {
+    setLoading(false);
+  }
+};
 
-  // Реакция на изменение диапазонов с debounce
-  useEffect(() => {
-    if (initialCars.length > 0) {
-      debouncedFilterCars(initialCars);
-    }
-    return () => {
-      debouncedFilterCars.cancel(); // Очищаем debounce при размонтировании
-    };
-  }, [engineCapacityRange, enginePowerRange, priceRange, priceOrder]);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -154,6 +134,8 @@ const MainPage: React.FC<Props> = ({ setIsAuthChecked }) => {
         <h1 style={{ fontSize: '2rem', fontWeight: 600, marginBottom: '20px' }}>Available Cars</h1>
         {loading ? (
           <div>Loading cars...</div>
+        ) : notFound ? (
+          <div style={{ textAlign: 'center', fontStyle: 'italic' }}>No cars found matching your search.</div>
         ) : (
           <div
             style={{
@@ -164,13 +146,9 @@ const MainPage: React.FC<Props> = ({ setIsAuthChecked }) => {
               maxWidth: '1200px',
             }}
           >
-            {notFound ? (
-              <div style={{ textAlign: 'center', fontStyle: 'italic', gridColumn: '1/-1' }}>
-                No cars found matching your search.
-              </div>
-            ) : (
-              cars.map((car) => <CarCard key={car.id} car={car} />)
-            )}
+            {cars.map((car) => (
+              <CarCard key={car.id} car={car} />
+            ))}
           </div>
         )}
       </div>
@@ -191,6 +169,7 @@ const MainPage: React.FC<Props> = ({ setIsAuthChecked }) => {
           onEngineCapacityChange={setEngineCapacityRange}
           onEnginePowerChange={setEnginePowerRange}
           onPriceRangeChange={setPriceRange}
+          onApplyFilters={() => applyFilters()}
         />
       </div>
     </div>

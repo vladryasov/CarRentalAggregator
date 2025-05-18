@@ -2,6 +2,7 @@
 using CarRentalAggregator.Domain.Enums;
 using CarRentalAggregator.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CarRentalAggregator.Controllers
 {
@@ -101,6 +102,21 @@ namespace CarRentalAggregator.Controllers
             }
 
             var cars = await _carService.GetCarByPriceAsync(minPrice, maxPrice, cancellationToken);
+            return Ok(cars);
+        }
+
+        [HttpGet("filter")]
+        public async Task<ActionResult<IEnumerable<CarDto>>> GetFilteredCars(
+            [FromQuery] double minCapacity,
+            [FromQuery] double maxCapacity,
+            [FromQuery] int minPower,
+            [FromQuery] int maxPower,
+            [FromQuery] int minPrice,
+            [FromQuery] int maxPrice,
+            [FromQuery] string? sortByPrice,
+            [FromQuery] string? searchQuery = null)
+        {
+            var cars = await _carService.FilterCarsAsync(minCapacity, maxCapacity, minPower, maxPower, minPrice, maxPrice, sortByPrice, searchQuery);
             return Ok(cars);
         }
 

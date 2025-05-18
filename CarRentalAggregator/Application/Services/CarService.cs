@@ -4,6 +4,8 @@ using CarRentalAggregator.Domain.Entities;
 using CarRentalAggregator.Domain.Enums;
 using CarRentalAggregator.Domain.Interfaces;
 using CarRentalAggregator.DTO;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
 namespace CarRentalAggregator.Application.Services
@@ -87,6 +89,28 @@ namespace CarRentalAggregator.Application.Services
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return _mapper.Map<CarDto>(car);
+        }
+
+        public async Task<IEnumerable<CarDto>> FilterCarsAsync(double minCapacity,
+    double maxCapacity, int minPower, int maxPower, int minPrice, int maxPrice, string? sortByPrice, string? searchQuery = null)
+        {
+            var cars = await _unitOfWork.Cars.GetAllAsync();
+
+            var filtered = cars.Where(c =>
+                c.EngineCapacity >= minCapacity && c.EngineCapacity <= maxCapacity &&
+                c.EnginePower >= minPower && c.EnginePower <= maxPower &&
+                c.PriceForOneDay >= minPrice && c.PriceForOneDay <= maxPrice &&
+                (string.IsNullOrEmpty(searchQuery) ||
+                 c.Brand.ToLower().Contains(searchQuery.ToLower()) ||
+                 c.Model.ToLower().Contains(searchQuery.ToLower())));
+
+            if (sortByPrice?.ToLower() == "asc")
+                filtered = filtered.OrderBy(c => c.PriceForOneDay);
+            else if (sortByPrice?.ToLower() == "desc")
+                filtered = filtered.OrderByDescending(c => c.PriceForOneDay);
+
+            Console.WriteLine($"Total cars after filtering: {filtered.Count()} with searchQuery={searchQuery}");
+            return _mapper.Map<IEnumerable<CarDto>>(filtered);
         }
 
         public async Task<bool> UpdateCarAsync(Guid userId, CarDto carDto, CancellationToken cancellationToken)

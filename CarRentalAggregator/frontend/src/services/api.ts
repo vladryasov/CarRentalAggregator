@@ -53,7 +53,30 @@ export const searchCarsByModel = async (model: string): Promise<CarDto[]> => {
   return response.data;
 };
 
-// Новые методы для диапазонной фильтрации
+export const fetchCarsByFilter = async (
+  minCapacity: number,
+  maxCapacity: number,
+  minPower: number,
+  maxPower: number,
+  minPrice: number,
+  maxPrice: number,
+  sortByPrice?: 'asc' | 'desc' | null,
+  searchQuery?: string
+): Promise<CarDto[]> => {
+  const params = {
+    minCapacity,
+    maxCapacity,
+    minPower,
+    maxPower,
+    minPrice,
+    maxPrice,
+    sortByPrice: sortByPrice || undefined,
+    searchQuery: searchQuery || undefined,
+  };
+  const response = await api.get<CarDto[]>('/api/Car/filter', { params });
+  return response.data;
+};
+
 export const fetchCarsByEngineCapacityRange = async (min: number, max: number): Promise<CarDto[]> => {
   const response = await api.get<CarDto[]>(`/api/Car/engine-capacity-range?min=${min}&max=${max}`);
   return response.data;

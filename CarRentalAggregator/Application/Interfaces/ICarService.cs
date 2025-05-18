@@ -15,6 +15,8 @@ namespace CarRentalAggregator.Application.Interfaces
         public Task<IEnumerable<CarDto?>> GetCarByEnginePowerAsync(int minEnginePower, int maxEnginePower, CancellationToken cancellationToken);
         public Task<IEnumerable<CarDto?>> GetCarByEngineTypeAsync(EngineTypes engineType, CancellationToken cancellationToken);
         public Task<IEnumerable<CarDto?>> GetCarByPriceAsync(decimal minPrice, decimal maxPrice, CancellationToken cancellationToken);
+        public Task<IEnumerable<CarDto>> FilterCarsAsync(double minCapacity,
+            double maxCapacity, int minPower, int maxPower, int minPrice, int maxPrice, string? sortByPrice, string? searchQuery = null);
         public Task<CarDto> CreateCarAsync(CarDto carDto, CancellationToken cancellationToken);
         public Task<bool> UpdateCarAsync(Guid id, CarDto carDto, CancellationToken cancellationToken);
         public Task<bool> DeleteCarAsync(Guid id, CancellationToken cancellationToken);
