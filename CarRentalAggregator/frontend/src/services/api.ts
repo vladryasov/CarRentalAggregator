@@ -19,6 +19,12 @@ api.interceptors.request.use((config) => {
 // 🔐 Auth
 export const login = async (data: LoginRequest): Promise<LoginResponse> => {
   const response = await api.post<LoginResponse>('/api/Auth/login', data);
+
+  localStorage.setItem(
+    'currentUser',
+    JSON.stringify({ userId: response.data.userId, rememberMe: data.rememberMe })
+  );
+
   return response.data;
 };
 
@@ -29,11 +35,22 @@ export const register = async (data: LoginRequest): Promise<LoginResponse> => {
 
 export const autoLogin = async (): Promise<UserDto> => {
   const response = await api.get<UserDto>('/api/Auth/auto-login');
+
+  localStorage.setItem(
+    'currentUser',
+    JSON.stringify({ userId: response.data.id })
+  );
+
   return response.data;
 };
 
 export const logout = async (): Promise<{ message: string }> => {
   const response = await api.post<{ message: string }>('/api/Auth/logout');
+  return response.data;
+};
+
+export const getUserById = async (userId: string): Promise<UserDto> => {
+  const response = await api.get<UserDto>(`/api/User/${userId}`);
   return response.data;
 };
 

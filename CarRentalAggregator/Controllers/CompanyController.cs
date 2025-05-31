@@ -4,7 +4,7 @@ using CarRentalAggregator.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CompanyRentalAggregator.Controllers
+namespace CarRentalAggregator.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -38,5 +38,6 @@ namespace CompanyRentalAggregator.Controllers
             var createdCompany = await _companyService.CreateCompanyAsync(companyDto, cancellationToken);
             return CreatedAtAction(nameof(GetByCompanyIdAsync), new { companyId = createdCompany.Id }, createdCompany);
         }
+        
     }
 }

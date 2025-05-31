@@ -11,7 +11,8 @@ export interface LoginResponse {
 
 export interface UserDto{
     id: string
-    role: Int16Array
+    role: number
+    token?: string
 }
 
 export {};

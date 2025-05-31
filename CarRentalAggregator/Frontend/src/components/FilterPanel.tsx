@@ -136,7 +136,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   // важно: отложено, чтобы дождаться обновления состояния
   setTimeout(() => {
     onSearchChange('');
-    onApplyFilters();
   }, 100);
 };
 

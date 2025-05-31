@@ -12,6 +12,8 @@ namespace CarRentalAggregator.Domain.Interfaces
         Task<List<Car>> GetByEngineTypeAsync(EngineTypes engineType, CancellationToken cancellationToken = default);
         Task<List<Car>> GetByModelAsync(string model, CancellationToken cancellationToken = default);
         Task<List<Car>> GetByPriceAsync(decimal minPrice, decimal maxPrice, CancellationToken cancellationToken = default);
+        Task AddPhotoAsync(CarPhoto photo, CancellationToken cancellationToken = default);
+        Task<List<CarPhoto>> GetPhotosByCarIdAsync(Guid carId, CancellationToken cancellationToken = default);
 
     }
 }

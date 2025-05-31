@@ -68,5 +68,18 @@ namespace CarRentalAggregator.Persistance.Repositories
         {
             _dbContext.Cars.Update(entity);
         }
+
+        public async Task AddPhotoAsync(CarPhoto photo, CancellationToken cancellationToken = default)
+        {
+            await _dbContext.CarPhotos.AddAsync(photo, cancellationToken);;
+        }
+
+        public async Task<List<CarPhoto>> GetPhotosByCarIdAsync(Guid carId, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.CarPhotos
+                .Where(p => p.CarId == carId)
+                .ToListAsync(cancellationToken);
+        }
+
     }
 }

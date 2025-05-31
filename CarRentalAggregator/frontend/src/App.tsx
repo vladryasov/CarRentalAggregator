@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import MainPage from './pages/MainPage';
+import AdminPage from './pages/AdminPage';
 import { autoLogin } from './services/api';
 
 const App: React.FC = () => {
@@ -10,9 +11,9 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const remembered = localStorage.getItem('rememberedUser');
+      const remembered = localStorage.getItem('currentUser');
 
-      if (!remembered) {
+      //if (remembered?.includes("true")) {
         try {
           await autoLogin(); // только если не помечен как remembered
           navigate('/main');
@@ -22,7 +23,7 @@ const App: React.FC = () => {
       }
 
       setIsAuthChecked(true);
-    };
+    //};
 
     checkAuth();
   }, [navigate]);
@@ -34,10 +35,10 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/main" element={<MainPage setIsAuthChecked={setIsAuthChecked} />} />
+        <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </>
   );
 };
 
 export default App;
-

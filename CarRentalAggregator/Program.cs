@@ -1,6 +1,7 @@
 using CarRentalAggregator.Application.Interfaces;
 using CarRentalAggregator.Application.Services;
 using CarRentalAggregator.Application.Serialization;
+using CarRentalAggregator.Application.Settings;
 using CarRentalAggregator.Domain.Interfaces;
 using CarRentalAggregator.Persistance;
 using CarRentalAggregator.Persistance.Repositories;
@@ -16,7 +17,13 @@ namespace CarRentalAggregator
     {
         public static void Main(string[] args)
         {
+            DotNetEnv.Env.Load();
+
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Configuration.AddEnvironmentVariables();
+            builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
+
 
             builder.Services.AddCors(options =>
             {
@@ -40,6 +47,7 @@ namespace CarRentalAggregator
             builder.Services.AddScoped<ICompanyService, CompanyService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IJWTService, JWTService>();
+            builder.Services.AddScoped<IPhotoService, PhotoService>();
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<ICarRepository, CarRepository>();
@@ -94,6 +102,7 @@ namespace CarRentalAggregator
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
                 };
             });
+
 
             // Add authorization policies
             builder.Services.AddAuthorization(options =>
