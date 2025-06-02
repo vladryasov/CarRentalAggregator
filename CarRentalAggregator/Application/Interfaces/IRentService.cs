@@ -9,5 +9,6 @@ namespace CarRentalAggregator.Application.Interfaces
         public Task<RentDto> CreateRentAsync(RentDto rentDto, CancellationToken cancellationToken);
         public Task<bool> DeleteRentAsync(Guid rentId, CancellationToken cancellationToken);
         public Task<bool> UpdateRentAsync(Guid rentId, RentDto rentDto, CancellationToken cancellationToken);
+        public Task<IEnumerable<RentDto>> GetRentsByUserIdAsync(Guid userId, CancellationToken cancellationToken);
     }
 }

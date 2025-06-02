@@ -1,10 +1,12 @@
 import React from 'react';
-import LoginForm from '../components/LoginForm';
+import LoginForm, { LoginFormProps } from '../components/LoginForm';
 
-const LoginPage: React.FC = () => {
+type LoginPageProps = LoginFormProps;
+
+const LoginPage: React.FC<LoginPageProps> = ({ setIsAuthChecked }) => {
   return (
     <div>
-      <LoginForm />
+      <LoginForm setIsAuthChecked={setIsAuthChecked} />
     </div>
   );
 };

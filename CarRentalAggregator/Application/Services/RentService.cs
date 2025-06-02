@@ -64,5 +64,11 @@ namespace CarRentalAggregator.Application.Services
 
             return true;
         }
+
+        public async Task<IEnumerable<RentDto>> GetRentsByUserIdAsync(Guid userId, CancellationToken cancellationToken)
+        {
+            var rents = await _unitOfWork.Rents.GetByUserIdAsync(userId, cancellationToken);
+            return _mapper.Map<IEnumerable<RentDto>>(rents);
+        }
     }
 }

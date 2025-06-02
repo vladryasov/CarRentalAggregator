@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
-import CarCard from '../components/CarCard';
+import CarListCard from '../components/CarListCard';
 import FilterPanel from '../components/FilterPanel';
 import AccountIcon from '../components/AccountIcon';
 import { CarDto } from '../types/CarDto';
 import { fetchCars, fetchCarsByFilter } from '../services/api';
 
-interface Props {
-  setIsAuthChecked: (value: boolean) => void;
+interface MainPageProps {
+  setIsAuthChecked: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const MainPage: React.FC<Props> = ({ setIsAuthChecked }) => {
+const MainPage: React.FC<MainPageProps> = ({ setIsAuthChecked }) => {
   const [cars, setCars] = useState<CarDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -147,7 +147,7 @@ const MainPage: React.FC<Props> = ({ setIsAuthChecked }) => {
             }}
           >
             {cars.map((car) => (
-              <CarCard key={car.id} car={car} />
+              <CarListCard key={car.id} car={car} />
             ))}
           </div>
         )}

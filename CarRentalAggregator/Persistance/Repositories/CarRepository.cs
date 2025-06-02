@@ -23,44 +23,54 @@ namespace CarRentalAggregator.Persistance.Repositories
         }
 
         public async Task<List<Car>> GetAllAsync(CancellationToken cancellationToken = default)
-            => await _dbContext.Cars.ToListAsync(cancellationToken);
+            => await _dbContext.Cars
+                .Include(c => c.Photos)
+                .ToListAsync(cancellationToken);
 
         public async Task<List<Car>> GetByBrandAsync(string brand, CancellationToken cancellationToken = default)
             => await _dbContext.Cars
+                .Include(c => c.Photos)
                 .Where(c => c.Brand == brand)
                 .ToListAsync(cancellationToken);
 
         public async Task<List<Car>> GetByEngineCapacityAsync(float minEngineCapacity, float maxEngineCapacity, CancellationToken cancellationToken = default)
             => await _dbContext.Cars
+                .Include(c => c.Photos)
                 .Where(c => c.EngineCapacity >= minEngineCapacity && c.EngineCapacity <= maxEngineCapacity)
                 .ToListAsync(cancellationToken);
 
         public async Task<List<Car>> GetByEnginePowerAsync(int minEnginePower, int maxEnginePower, CancellationToken cancellationToken = default)
             => await _dbContext.Cars
+                .Include(c => c.Photos)
                 .Where(c => c.EnginePower >= minEnginePower && c.EnginePower <= maxEnginePower)
                 .ToListAsync(cancellationToken);
 
         public async Task<List<Car>> GetByEngineTypeAsync(EngineTypes engineType, CancellationToken cancellationToken = default)
             => await _dbContext.Cars
+                .Include(c => c.Photos)
                 .Where(c => c.EngineType == engineType)
                 .ToListAsync(cancellationToken);
 
         public async Task<Car> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
             => (await _dbContext.Cars
+                .Include(c => c.Photos)
                 .FirstOrDefaultAsync(c => c.Id == id, cancellationToken))!;
 
         public async Task<List<Car>> GetByCompanyIdAsync(Guid companyId, CancellationToken cancellationToken = default)
             => await _dbContext.Cars
+                .Include(c => c.Photos)
                 .Where(c => c.CompanyId == companyId)
                 .ToListAsync(cancellationToken);
 
         public async Task<List<Car>> GetByModelAsync(string model, CancellationToken cancellationToken = default)
             => await _dbContext.Cars
+                .Include(c => c.Photos)
                 .Where(c => c.Model == model)
                 .ToListAsync(cancellationToken);
 
         public async Task<List<Car>> GetByPriceAsync(decimal minPrice, decimal maxPrice, CancellationToken cancellationToken = default)
             => await _dbContext.Cars
+                .Include(c => c.Photos)
                 .Where(c => c.PriceForOneDay >= minPrice && c.PriceForOneDay <= maxPrice)
                 .ToListAsync(cancellationToken);
 
@@ -71,7 +81,7 @@ namespace CarRentalAggregator.Persistance.Repositories
 
         public async Task AddPhotoAsync(CarPhoto photo, CancellationToken cancellationToken = default)
         {
-            await _dbContext.CarPhotos.AddAsync(photo, cancellationToken);;
+            await _dbContext.CarPhotos.AddAsync(photo, cancellationToken);
         }
 
         public async Task<List<CarPhoto>> GetPhotosByCarIdAsync(Guid carId, CancellationToken cancellationToken = default)

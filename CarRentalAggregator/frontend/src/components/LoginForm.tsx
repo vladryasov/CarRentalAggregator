@@ -3,7 +3,11 @@ import { LoginRequest } from '../types/AuthTypes';
 import { login, register } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
-const LoginForm: React.FC = () => {
+export interface LoginFormProps {
+  setIsAuthChecked: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const LoginForm: React.FC<LoginFormProps> = ({ setIsAuthChecked }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -12,33 +16,34 @@ const LoginForm: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e: FormEvent) => {
-  e.preventDefault();
-  setError(null);
+    e.preventDefault();
+    setError(null);
 
-  const request: LoginRequest = { email, password, rememberMe };
+    const request: LoginRequest = { email, password, rememberMe };
 
-  try {
-    const response = isLoginMode
-      ? await login(request)
-      : await register(request);
+    try {
+      const response = isLoginMode
+        ? await login(request)
+        : await register(request);
 
-    console.log(`${isLoginMode ? 'Login' : 'Registration'} successful:`, response);
+      console.log(`${isLoginMode ? 'Login' : 'Registration'} successful:`, response);
 
-    if (isLoginMode || request.rememberMe) {
-      navigate('/main');
-    } else {
-      // после регистрации перекидываем на форму логина
-      setIsLoginMode(true);
-      setEmail('');
-      setPassword('');
+      if (isLoginMode) {
+        setIsAuthChecked(true);
+        navigate('/main', { replace: true });
+      } else {
+        // после регистрации перекидываем на форму логина
+        setIsLoginMode(true);
+        setEmail('');
+        setPassword('');
+      }
+    } catch (err: any) {
+      setError(
+        err.response?.data?.message ||
+        `An error occurred during ${isLoginMode ? 'login' : 'registration'}`
+      );
     }
-  } catch (err: any) {
-    setError(
-      err.response?.data?.message ||
-      `An error occurred during ${isLoginMode ? 'login' : 'registration'}`
-    );
-  }
-};
+  };
 
   return (
     <div style={styles.container}>

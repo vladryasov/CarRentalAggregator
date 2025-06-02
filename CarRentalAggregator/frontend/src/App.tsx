@@ -1,43 +1,57 @@
 import React, { useEffect, useState } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import MainPage from './pages/MainPage';
 import AdminPage from './pages/AdminPage';
+import CarDetailsPage from './pages/CarDetailsPage';
+import RentalHistoryPage from './pages/RentalHistoryPage';
 import { autoLogin } from './services/api';
+
+interface PageProps {
+  setIsAuthChecked: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 const App: React.FC = () => {
   const [isAuthChecked, setIsAuthChecked] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const checkAuth = async () => {
       const remembered = localStorage.getItem('currentUser');
-
-      //if (remembered?.includes("true")) {
+      
+      if (remembered) {
         try {
-          await autoLogin(); // только если не помечен как remembered
-          navigate('/main');
+          await autoLogin();
+          setIsAuthChecked(true);
         } catch {
-          // не авторизован
+          localStorage.removeItem('currentUser');
+          setIsAuthChecked(false);
         }
+      } else {
+        setIsAuthChecked(false);
       }
-
-      setIsAuthChecked(true);
-    //};
+    };
 
     checkAuth();
-  }, [navigate]);
+  }, []);
 
-  if (!isAuthChecked) return <div>Loading...</div>;
+  if (!isAuthChecked) {
+    return (
+      <Routes>
+        <Route path="/login" element={<LoginPage setIsAuthChecked={setIsAuthChecked} />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    );
+  }
 
   return (
-    <>
-      <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/main" element={<MainPage setIsAuthChecked={setIsAuthChecked} />} />
-        <Route path="/admin" element={<AdminPage />} />
-      </Routes>
-    </>
+    <Routes>
+      <Route path="/main" element={<MainPage setIsAuthChecked={setIsAuthChecked} />} />
+      <Route path="/admin" element={<AdminPage setIsAuthChecked={setIsAuthChecked} />} />
+      <Route path="/car/:id" element={<CarDetailsPage />} />
+      <Route path="/rentals" element={<RentalHistoryPage />} />
+      <Route path="/" element={<Navigate to="/main" replace />} />
+      <Route path="*" element={<Navigate to="/main" replace />} />
+    </Routes>
   );
 };
 

@@ -1,3 +1,5 @@
+import { server } from "typescript";
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -7,6 +9,7 @@ export interface LoginRequest {
 export interface LoginResponse {
   message: string;
   userId: string;
+  token?: string;
 }
 
 export interface UserDto{

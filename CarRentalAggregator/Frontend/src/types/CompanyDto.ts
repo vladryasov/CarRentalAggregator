@@ -1,4 +1,6 @@
 export interface CompanyDto {
+  id?: string;
   name: string;
-  address: string;
+  phoneNumber: string;
+  email: string;
 }

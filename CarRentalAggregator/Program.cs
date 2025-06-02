@@ -48,6 +48,7 @@ namespace CarRentalAggregator
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IJWTService, JWTService>();
             builder.Services.AddScoped<IPhotoService, PhotoService>();
+            builder.Services.AddScoped<ICarPhotoService, CarPhotoService>();
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<ICarRepository, CarRepository>();

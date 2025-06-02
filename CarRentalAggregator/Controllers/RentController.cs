@@ -2,6 +2,7 @@
 using CarRentalAggregator.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CarRentalAggregator.Controllers
 {
@@ -74,6 +75,19 @@ namespace CarRentalAggregator.Controllers
             {
                 return NotFound(new { message = "Rent not found" });
             }
+        }
+
+        [HttpGet("my")]
+        public async Task<IActionResult> GetMyRents(CancellationToken cancellationToken)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return Unauthorized();
+            }
+
+            var rents = await _rentService.GetRentsByUserIdAsync(userId, cancellationToken);
+            return Ok(rents);
         }
     }
 }

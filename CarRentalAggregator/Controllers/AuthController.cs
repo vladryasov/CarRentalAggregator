@@ -23,7 +23,7 @@ public class AuthController : ControllerBase
 
             var expires = request.RememberMe
                 ? DateTime.UtcNow.AddDays(30)
-                : (DateTime?)null;
+                : DateTime.UtcNow.AddHours(12);
 
             // Установка cookie (HTTP-only для безопасности)
             Response.Cookies.Append("JwtToken", response.Token, new CookieOptions
@@ -54,7 +54,7 @@ public class AuthController : ControllerBase
 
             var expires = request.RememberMe
                 ? DateTime.UtcNow.AddDays(30)
-                : (DateTime?)null;
+                : DateTime.UtcNow.AddHours(12);
 
             // Установка cookie (как при логине)
             Response.Cookies.Append("JwtToken", response.Token, new CookieOptions

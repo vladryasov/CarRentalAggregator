@@ -1,17 +1,22 @@
 import axios from 'axios';
 import { LoginRequest, LoginResponse, UserDto } from '../types/AuthTypes';
 import { CarDto } from '../types/CarDto';
+import { CompanyDto } from '../types/CompanyDto';
+import { RentalDto } from '../types/RentalTypes';
 
 export const api = axios.create({
   baseURL: 'https://localhost:7198',
   withCredentials: true,
 });
 
-// ⛔ Placeholder interceptor (можно расширить в будущем)
+// Interceptor для добавления токена к запросам
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('rememberedUser') ? JSON.parse(localStorage.getItem('rememberedUser')!).token : null;
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  const currentUser = localStorage.getItem('currentUser');
+  if (currentUser) {
+    const token = JSON.parse(currentUser).token;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
   }
   return config;
 });
@@ -22,9 +27,14 @@ export const login = async (data: LoginRequest): Promise<LoginResponse> => {
 
   localStorage.setItem(
     'currentUser',
-    JSON.stringify({ userId: response.data.userId, rememberMe: data.rememberMe })
+    JSON.stringify({ 
+      userId: response.data.userId, 
+      token: response.data.token,
+      rememberMe: data.rememberMe 
+    })
   );
 
+  api.defaults.headers.Authorization = `Bearer ${response.data.token}`;
   return response.data;
 };
 
@@ -35,13 +45,13 @@ export const register = async (data: LoginRequest): Promise<LoginResponse> => {
 
 export const autoLogin = async (): Promise<UserDto> => {
   const response = await api.get<UserDto>('/api/Auth/auto-login');
-
-  localStorage.setItem(
-    'currentUser',
-    JSON.stringify({ userId: response.data.id })
-  );
-
   return response.data;
+};
+
+// Функция для проверки, нужно ли выполнять автологин
+export const shouldAutoLogin = (): boolean => {
+  const currentUser = localStorage.getItem('currentUser');
+  return !!currentUser; // возвращаем true только если есть сохраненный пользователь
 };
 
 export const logout = async (): Promise<{ message: string }> => {
@@ -107,6 +117,35 @@ export const fetchCarsByEnginePowerRange = async (min: number, max: number): Pro
 export const fetchCarsByPriceRange = async (min: number, max: number): Promise<CarDto[]> => {
   const response = await api.get<CarDto[]>(`/api/Car/price-range?min=${min}&max=${max}`);
   return response.data;
+};
+
+export const fetchCarDetails = async (id: string): Promise<CarDto> => {
+  const response = await api.get(`/api/Car/${id}`);
+  return response.data;
+};
+
+export const fetchCarCompanies = async (carId: string): Promise<CompanyDto[]> => {
+  const response = await api.get<CompanyDto[]>(`/api/Car/${carId}/companies`);
+  return response.data;
+};
+
+// Rentals
+export const createRental = async (carId: string, startRent: string, endRent: string): Promise<RentalDto> => {
+  const response = await api.post<RentalDto>('/api/Rent', {
+    carId,
+    startRent,
+    endRent
+  });
+  return response.data;
+};
+
+export const getUserRentals = async (): Promise<RentalDto[]> => {
+  const response = await api.get<RentalDto[]>('/api/Rent/my');
+  return response.data;
+};
+
+export const cancelRental = async (rentalId: string): Promise<void> => {
+  await api.post(`/api/Rent/${rentalId}/cancel`);
 };
 
 export default api;

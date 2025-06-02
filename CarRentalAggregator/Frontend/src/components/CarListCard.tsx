@@ -2,11 +2,11 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CarDto } from '../types/CarDto';
 
-interface CarCardProps {
+interface CarListCardProps {
   car: CarDto;
 }
 
-const CarCard: React.FC<CarCardProps> = ({ car }) => {
+const CarListCard: React.FC<CarListCardProps> = ({ car }) => {
   const navigate = useNavigate();
   const previewPhoto = car.photos?.find(photo => photo.isPreview);
   const firstPhoto = car.photos?.[0];
@@ -71,4 +71,4 @@ const CarCard: React.FC<CarCardProps> = ({ car }) => {
   );
 };
 
-export default CarCard;
+export default CarListCard; 

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CarRentalAggregator.Domain.Entities;
 using CarRentalAggregator.DTO;
+using CarRentalAggregator.DTOs;
 
 
 namespace CarRentalAggregator.Mappings
@@ -11,6 +12,9 @@ namespace CarRentalAggregator.Mappings
         {
             CreateMap<Car, CarDto>();
             CreateMap<CarDto, Car>();
+
+            CreateMap<CarPhoto, CarPhotoDto>();
+            CreateMap<CarPhotoDto, CarPhoto>();
 
             CreateMap<Company, CompanyDto>();
             CreateMap<CompanyDto, Company>();

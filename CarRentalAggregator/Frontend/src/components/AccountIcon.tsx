@@ -35,10 +35,10 @@ const AccountIcon: React.FC<Props> = ({ setIsAuthChecked, isOpen, toggleMenu }) 
   const handleLogout = async () => {
     try {
       await logout();
-      localStorage.removeItem('rememberedUser');
+      localStorage.removeItem('currentUser');
       delete api.defaults.headers.Authorization;
       setIsAuthChecked(false);
-      navigate('/', { replace: true });
+      navigate('/login', { replace: true });
     } catch (err) {
       console.error('Logout failed:', err);
     }
@@ -95,7 +95,21 @@ const AccountIcon: React.FC<Props> = ({ setIsAuthChecked, isOpen, toggleMenu }) 
             <div>
               <h3>Account</h3>
               <p style={{ marginTop: '30px' }}>Profile settings</p>
-              <p>Rental history</p>
+              <p 
+                onClick={() => {
+                  navigate('/rentals');
+                  toggleMenu();
+                }}
+                style={{
+                  cursor: 'pointer',
+                  color: '#2c3e50',
+                  transition: 'color 0.3s'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.color = '#3498db'}
+                onMouseOut={(e) => e.currentTarget.style.color = '#2c3e50'}
+              >
+                Rental history
+              </p>
             </div>
             <button
               onClick={handleLogout}
